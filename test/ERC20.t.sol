@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {Test, console2, StdStyle} from "forge-std/Test.sol";
+import {Test, console2, StdStyle, StdCheats} from "forge-std/Test.sol";
 import {ERC20} from "../src/ERC20.sol";
 
 contract BaseSetup is ERC20, Test {
@@ -24,8 +24,6 @@ contract BaseSetup is ERC20, Test {
 contract ERC20TransferTest is BaseSetup {
     function setUp() public override {
         BaseSetup.setUp();
-
-        console2.log(StdStyle.red("my red string"));
     }
 
     function testTransferTokenCorrectly() public {
@@ -41,4 +39,13 @@ contract ERC20TransferTest is BaseSetup {
         vm.expectRevert("ERC20: Insufficient sender balance");
         this.transfer(bob, 400e18);
     }
+
+    function testEmitsTransferEvent() public {
+        vm.expectEmit(true, true, true, true);
+        emit Transfer(alice, bob, 100e18);
+        vm.prank(alice);
+        this.transfer(bob, 100e18);
+    }
 }
+
+contract ERC20TransferFromTest is BaseSetup {}
